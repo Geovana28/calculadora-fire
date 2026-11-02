@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="F.I.R.E. Calculator — Calculate when you'll achieve Financial Independence and Retire Early with interactive projections.">
+    <title>F.I.R.E. Calculator | Financial Independence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-icon">🔥</div>
+                <div>
+                    <h1>F.I.R.E. Calculator</h1>
+                    <p class="subtitle">Financial Independence, Retire Early</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="badge badge-gold">Compound Interest</span>
+                <span class="badge badge-emerald">Passive Income</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <!-- FIRE Result Banner -->
+                <div class="fire-banner" id="fireBanner">
+                    <div class="fire-banner-icon">🔥</div>
+                    <div class="fire-banner-content">
+                        <h2 id="fireHeadline">Configure your finances below</h2>
+                        <p id="fireSubline">Adjust the parameters to see your path to financial independence</p>
+                    </div>
+                </div>
+
+                <!-- Wealth Growth Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Wealth Growth Projection</h2>
+                        <div class="chart-legend">
+                            <span class="legend-item legend-optimistic"><span class="legend-dot"></span> Optimistic</span>
+                            <span class="legend-item legend-realistic"><span class="legend-dot"></span> Realistic</span>
+                            <span class="legend-item legend-pessimistic"><span class="legend-dot"></span> Pessimistic</span>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="wealthChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Passive Income vs Expenses Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Passive Income vs Monthly Expenses</h2>
+                        <div class="chart-legend">
+                            <span class="legend-item legend-income"><span class="legend-dot"></span> Passive Income</span>
+                            <span class="legend-item legend-expenses"><span class="legend-dot"></span> Expenses (inflation-adjusted)</span>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="incomeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Breakdown Pie -->
+                <div class="chart-card chart-card-half">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Wealth Composition at F.I.R.E.</h2>
+                    </div>
+                    <div class="chart-wrapper chart-wrapper-pie">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Monte Carlo & Ruin Probability Engine -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <h2 class="chart-title">🎲 Monte Carlo Stress Test & Probability of Ruin (500 Paths)</h2>
+                            <p style="font-size: 0.76rem; color: rgba(255,255,255,0.4); margin-top: 4px;">Sequence of Returns Risk (SRR) with historical volatility (σ = 16.5% a.a.)</p>
+                        </div>
+                        <div style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-family: monospace; font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 6px;" id="ruinRateBadge">
+                            Capital Survival: 96.2% (Ruin: 3.8%)
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="monteCarloChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Controls Sidebar -->
+            <aside class="controls-panel">
+                <!-- Income & Savings -->
+                <div class="control-group">
+                    <h3 class="control-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        Income & Savings
+                    </h3>
+
+                    <div class="input-control">
+                        <label for="incomeInput">Monthly Income</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="incomeInput" value="5000" min="500" max="500000" step="100">
+                        </div>
+                    </div>
+
+                    <div class="input-control">
+                        <label for="expensesInput">Monthly Expenses</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="expensesInput" value="3000" min="200" max="500000" step="100">
+                        </div>
+                    </div>
+
+                    <div class="input-control">
+                        <label for="savingsInput">Current Savings</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="savingsInput" value="10000" min="0" max="10000000" step="1000">
+                        </div>
+                    </div>
+
+                    <div class="savings-rate-display">
+                        <span>Savings Rate</span>
+                        <span class="savings-rate-value" id="savingsRate">40%</span>
+                    </div>
+                    <div class="savings-bar">
+                        <div class="savings-bar-fill" id="savingsBarFill" style="width: 40%"></div>
+                    </div>
+                </div>
+
+                <!-- Investment Returns -->
+                <div class="control-group">
+                    <h3 class="control-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                            <polyline points="17 6 23 6 23 12"/>
+                        </svg>
+                        Investment Returns
+                    </h3>
+
+                    <div class="slider-control">
+                        <div class="slider-header">
+                            <label for="returnSlider">Expected Annual Return</label>
+                            <span class="slider-value slider-value-gold" id="returnValue">8.0%</span>
+                        </div>
+                        <input type="range" id="returnSlider" min="1" max="20" value="8" step="0.5" class="slider-gold">
+                        <div class="slider-range"><span>1%</span><span>20%</span></div>
+                    </div>
+
+                    <div class="slider-control">
+                        <div class="slider-header">
+                            <label for="inflationSlider">Annual Inflation</label>
+                            <span class="slider-value slider-value-red" id="inflationValue">3.0%</span>
+                        </div>
+                        <input type="range" id="inflationSlider" min="0" max="15" value="3" step="0.5" class="slider-red">
+                        <div class="slider-range"><span>0%</span><span>15%</span></div>
+                    </div>
+
+                    <div class="slider-control">
+                        <div class="slider-header">
+                            <label for="withdrawalSlider">Safe Withdrawal Rate</label>
+                            <span class="slider-value slider-value-emerald" id="withdrawalValue">4.0%</span>
+                        </div>
+                        <input type="range" id="withdrawalSlider" min="2" max="6" value="4" step="0.1" class="slider-emerald">
+                        <div class="slider-range"><span>2%</span><span>6%</span></div>
+                    </div>
+                </div>
+
+                <!-- Projection Settings -->
+                <div class="control-group">
+                    <h3 class="control-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Projection
+                    </h3>
+
+                    <div class="slider-control">
+                        <div class="slider-header">
+                            <label for="yearsSlider">Projection Horizon</label>
+                            <span class="slider-value slider-value-gold" id="yearsValue">30 years</span>
+                        </div>
+                        <input type="range" id="yearsSlider" min="5" max="60" value="30" step="1" class="slider-gold">
+                        <div class="slider-range"><span>5 yr</span><span>60 yr</span></div>
+                    </div>
+
+                    <div class="input-control">
+                        <label for="ageInput">Your Current Age</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="ageInput" value="25" min="16" max="80" step="1">
+                            <span class="input-suffix">years</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Stats -->
+                <div class="control-group">
+                    <h3 class="control-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                        Key Numbers
+                    </h3>
+                    <div class="stats-grid">
+                        <div class="stat-card stat-gold">
+                            <span class="stat-label">F.I.R.E. Number</span>
+                            <span class="stat-value" id="statFireNumber">—</span>
+                        </div>
+                        <div class="stat-card stat-emerald">
+                            <span class="stat-label">Years to F.I.R.E.</span>
+                            <span class="stat-value" id="statYearsToFire">—</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Retire Age</span>
+                            <span class="stat-value" id="statRetireAge">—</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Monthly Passive</span>
+                            <span class="stat-value" id="statMonthlyPassive">—</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Total Invested</span>
+                            <span class="stat-value" id="statTotalInvested">—</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Total Interest</span>
+                            <span class="stat-value" id="statTotalInterest">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formula -->
+                <div class="control-group equation-group">
+                    <h3 class="control-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                        Formulas
+                    </h3>
+                    <div class="equation-box">
+                        <div class="equation eq-gold">FV = PV(1+r)ⁿ + PMT·[(1+r)ⁿ−1]/r</div>
+                        <div class="equation-label">Future Value with monthly contributions</div>
+                        <div class="equation eq-emerald">F.I.R.E. # = Annual Expenses / SWR</div>
+                        <div class="equation-label">Target wealth for financial independence</div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
